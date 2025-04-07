@@ -89,7 +89,7 @@ function Signup() {
         </form>
 
         <div className="text-center mt-6">
-          <Link to="/login" className="text-pink-300 hover:underline text-sm">
+          <Link to="/" className="text-pink-300 hover:underline text-sm">
             Already have an account? Login
           </Link>
         </div>
