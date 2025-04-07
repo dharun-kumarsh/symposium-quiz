@@ -1,41 +1,50 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
 
 const neonPinkGlow = "shadow-[0_0_10px_#ff00ff,0_0_20px_#ff00ff,0_0_30px_#ff00ff]";
 const inputStyle = "w-full px-4 py-2 rounded-lg border border-pink-400 text-white bg-transparent placeholder-pink-300 focus:outline-none focus:ring-2 focus:ring-pink-500";
 const buttonStyle = "w-full bg-pink-500 hover:bg-pink-400 text-black font-bold py-2 rounded-lg transition shadow-[0_0_20px_#ff00ff]";
 
 function Signup() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     confirmPassword: "",
   });
-  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setError("");
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.email || !formData.password || !formData.confirmPassword) {
-      setError("All fields are required.");
+
+    const { email, password, confirmPassword } = formData;
+
+    if (!email || !password || !confirmPassword) {
+      toast.error("All fields are required.");
       return;
     }
 
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match.");
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match.");
       return;
     }
 
-    console.log("Signing up with:", formData);
+    const userData = { email, password };
+    localStorage.setItem("registeredUser", JSON.stringify(userData));
+    localStorage.setItem("isLoggedIn", "true");
+
+    toast.success("Account created successfully!");
+    setTimeout(() => navigate("/dashboard"), 1000);
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black p-4">
+      <Toaster position="top-center" />
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -44,46 +53,12 @@ function Signup() {
       >
         <h2 className="text-3xl font-bold text-pink-300 text-center mb-6">Sign Up</h2>
 
-        {error && <p className="text-red-400 text-sm text-center mb-4">{error}</p>}
-
         <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <input
-              type="email"
-              name="email"
-              placeholder="Email"
-              className={inputStyle}
-              value={formData.email}
-              onChange={handleChange}
-            />
-          </div>
-          <div>
-            <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              className={inputStyle}
-              value={formData.password}
-              onChange={handleChange}
-            />
-          </div>
-          <div>
-            <input
-              type="password"
-              name="confirmPassword"
-              placeholder="Confirm Password"
-              className={inputStyle}
-              value={formData.confirmPassword}
-              onChange={handleChange}
-            />
-          </div>
+          <input type="email" name="email" placeholder="Email" className={inputStyle} value={formData.email} onChange={handleChange} required />
+          <input type="password" name="password" placeholder="Password" className={inputStyle} value={formData.password} onChange={handleChange} required />
+          <input type="password" name="confirmPassword" placeholder="Confirm Password" className={inputStyle} value={formData.confirmPassword} onChange={handleChange} required />
 
-          <motion.button
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.95 }}
-            type="submit"
-            className={buttonStyle}
-          >
+          <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.95 }} type="submit" className={buttonStyle}>
             Sign Up
           </motion.button>
         </form>
