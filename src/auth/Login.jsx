@@ -15,27 +15,36 @@ function Login() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const storedUser = JSON.parse(localStorage.getItem("registeredUser"));
+    const { email, password } = formData;
 
-    if (!formData.email || !formData.password) {
+    if (!email || !password) {
       toast.error("Both fields are required!");
       return;
     }
 
-    if (!storedUser) {
-      toast.error("No user found. Please sign up first.");
-      return;
-    }
+    try {
+      // 1. Fetch user list from SheetBest
+      const response = await fetch("https://api.sheetbest.com/sheets/411a4826-ef2d-497e-ab97-f484ba2419ab");
+      const users = await response.json();
 
-    if (formData.email === storedUser.email && formData.password === storedUser.password) {
-      localStorage.setItem("isLoggedIn", "true");
-      toast.success("Login successful!");
-      setTimeout(() => navigate("/dashboard"), 1000);
-    } else {
-      toast.error("Invalid credentials.");
+      // 2. Find matching user
+      const matchedUser = users.find(user => user.email === email && user.password === password);
+
+      if (matchedUser) {
+        toast.success("Login successful!");
+        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("loggedInUser", JSON.stringify(matchedUser));
+        setTimeout(() => navigate("/dashboard"), 1000);
+      } else {
+        toast.error("Invalid credentials.");
+      }
+
+    } catch (error) {
+      console.error("Error during login:", error);
+      toast.error("Unable to log in. Try again later.");
     }
   };
 

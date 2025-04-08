@@ -19,28 +19,49 @@ function Signup() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     const { email, password, confirmPassword } = formData;
-
+  
     if (!email || !password || !confirmPassword) {
       toast.error("All fields are required.");
       return;
     }
-
+  
     if (password !== confirmPassword) {
       toast.error("Passwords do not match.");
       return;
     }
-
+  
     const userData = { email, password };
-    localStorage.setItem("registeredUser", JSON.stringify(userData));
-    localStorage.setItem("isLoggedIn", "true");
-
-    toast.success("Account created successfully!");
-    setTimeout(() => navigate("/dashboard"), 1000);
+  
+    try {
+      // 1. Store in localStorage
+      localStorage.setItem("registeredUser", JSON.stringify(userData));
+      localStorage.setItem("isLoggedIn", "true");
+  
+      // 2. Store in SheetBest
+      const response = await fetch("https://api.sheetbest.com/sheets/411a4826-ef2d-497e-ab97-f484ba2419ab", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(userData)
+      });
+  
+      if (response.ok) {
+        toast.success("Account created successfully!");
+        setTimeout(() => navigate("/dashboard"), 1000);
+      } else {
+        toast.error("Failed to save data to Google Sheet.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error("Something went wrong. Please try again.");
+    }
   };
+  
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black p-4">
