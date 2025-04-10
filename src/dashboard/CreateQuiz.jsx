@@ -47,10 +47,9 @@ const CreateQuiz = () => {
   const handleOptionSelect = (optionKey) => {
     setQuestionData((prev) => ({
       ...prev,
-      crt_option: prev[optionKey],  // Save the actual text
+      crt_option: prev[optionKey],
     }));
   };
-  
 
   const saveQuestionAndMoveNext = () => {
     const { question, option1, option2, option3, option4, crt_option } = questionData;
@@ -111,131 +110,146 @@ const CreateQuiz = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-md">
-      <h2 className="text-3xl font-bold mb-6 text-center">Create a Quiz</h2>
+    <div className="min-h-screen flex items-center justify-center bg-black text-white">
+      <div className="w-full max-w-3xl p-8 bg-[#111] border-2 border-pink-500 rounded-2xl shadow-[0_0_20px_#ec4899]">
+        <h2 className="text-4xl font-bold mb-8 text-center text-pink-400 drop-shadow-[0_0_5px_#ec4899]">
+          Create a Quiz
+        </h2>
 
-      {step === 1 && (
-        <div className="space-y-4">
-          <div>
-            <label className="block font-medium">Quiz Name</label>
-            <input
-              type="text"
-              name="quiz_name"
-              value={quizInfo.quiz_name}
-              onChange={handleQuizInfoChange}
-              className="w-full mt-1 p-2 border rounded-md"
-              required
-            />
-          </div>
-          <div>
-            <label className="block font-medium">Layout</label>
-            <select
-              name="layout"
-              value={quizInfo.layout}
-              onChange={handleQuizInfoChange}
-              className="w-full mt-1 p-2 border rounded-md"
-              required
-            >
-              <option value="">Select Layout</option>
-              <option value="4x1">4x1</option>
-              <option value="2x2">2x2</option>
-            </select>
-          </div>
-          <div>
-            <label className="block font-medium">No. of Questions</label>
-            <input
-              type="number"
-              name="totalQuestions"
-              value={quizInfo.totalQuestions}
-              min="1"
-              onChange={handleQuizInfoChange}
-              className="w-full mt-1 p-2 border rounded-md"
-              required
-            />
-          </div>
-          <button
-            onClick={() => setStep(2)}
-            className="mt-4 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md"
-          >
-            Next
-          </button>
-        </div>
-      )}
-
-      {step === 2 && (
-        <>
-          <h3 className="text-xl font-semibold mb-4">Choose Background</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {backgrounds.map((img, index) => (
-              <div
-                key={index}
-                onClick={() => {
-                  setQuizInfo((prev) => ({ ...prev, bg: img }));
-                  setStep(3);
-                }}
-                className={`cursor-pointer rounded-md overflow-hidden border-4 ${
-                  quizInfo.bg === img ? 'border-blue-600' : 'border-transparent'
-                }`}
-              >
-                <img src={img} alt={`bg-${index + 1}`} className="w-full h-32 object-cover" />
-              </div>
-            ))}
-          </div>
-        </>
-      )}
-
-      {step === 3 && (
-        <>
-          <h3 className="text-xl font-semibold mb-4 mt-6">
-            Question {currentQuestionIndex + 1} of {quizInfo.totalQuestions}
-          </h3>
-
-          <div className="space-y-4">
+        {step === 1 && (
+          <div className="space-y-6">
             <div>
-              <label className="block font-medium">Question</label>
+              <label className="block font-medium mb-1">Quiz Name</label>
               <input
                 type="text"
-                name="question"
-                value={questionData.question}
-                onChange={handleQuestionChange}
-                className="w-full mt-1 p-2 border rounded-md"
+                name="quiz_name"
+                value={quizInfo.quiz_name}
+                onChange={handleQuizInfoChange}
+                className="w-full p-3 bg-black text-white border border-pink-400 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
                 required
               />
             </div>
 
-            {[1, 2, 3, 4].map((num) => {
-              const opt = `option${num}`;
-              return (
-                <div key={opt} className="flex items-center space-x-3">
-                  <input
-  type="radio"
-  name="crt_option"
-  checked={questionData.crt_option === questionData[opt]}
-  onChange={() => handleOptionSelect(opt)}
-/>
+            <div>
+              <label className="block font-medium mb-1">Layout</label>
+              <select
+                name="layout"
+                value={quizInfo.layout}
+                onChange={handleQuizInfoChange}
+                className="w-full p-3 bg-black text-white border border-pink-400 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+                required
+              >
+                <option value="">Select Layout</option>
+                <option value="4x1">4x1</option>
+                <option value="2x2">2x2</option>
+              </select>
+            </div>
 
-                  <input
-                    type="text"
-                    name={opt}
-                    value={questionData[opt]}
-                    onChange={handleQuestionChange}
-                    className="w-full mt-1 p-2 border rounded-md"
-                    placeholder={`Option ${num}`}
-                    required
-                  />
-                </div>
-              );
-            })}
+            <div>
+              <label className="block font-medium mb-1">No. of Questions</label>
+              <input
+                type="number"
+                name="totalQuestions"
+                value={quizInfo.totalQuestions}
+                min="1"
+                onChange={handleQuizInfoChange}
+                className="w-full p-3 bg-black text-white border border-pink-400 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+                required
+              />
+            </div>
 
             <button
-              onClick={saveQuestionAndMoveNext}
-              className="mt-4 w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md"
+              onClick={() => setStep(2)}
+              className="w-full mt-4 py-3 bg-pink-600 hover:bg-pink-700 text-white rounded-lg shadow-[0_0_10px_#ec4899] transition duration-300"
             >
-              {currentQuestionIndex + 1 === quizInfo.totalQuestions ? 'Submit Quiz' : 'Next Question'}
+              Next
             </button>
           </div>
-        </>
-      )}
+        )}
+
+        {step === 2 && (
+          <>
+            <h3 className="text-2xl font-semibold mb-6 text-pink-300 text-center">Choose Background</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {backgrounds.map((img, index) => (
+                <div
+                  key={index}
+                  onClick={() => {
+                    setQuizInfo((prev) => ({ ...prev, bg: img }));
+                    setStep(3);
+                  }}
+                  className={`cursor-pointer rounded-lg overflow-hidden border-4 transition-transform duration-300 hover:scale-105 ${
+                    quizInfo.bg === img
+                      ? 'border-pink-500 shadow-[0_0_15px_#ec4899]'
+                      : 'border-transparent'
+                  }`}
+                >
+                  <img src={img} alt={`bg-${index + 1}`} className="w-full h-32 object-cover" />
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {step === 3 && (
+          <>
+            <h3 className="text-xl font-semibold mb-4 mt-6 text-pink-300 text-center">
+              Question {currentQuestionIndex + 1} of {quizInfo.totalQuestions}
+            </h3>
+
+            <div className="space-y-6">
+              <div>
+                <label className="block font-medium mb-1">Question</label>
+                <input
+                  type="text"
+                  name="question"
+                  value={questionData.question}
+                  onChange={handleQuestionChange}
+                  className="w-full p-3 bg-black text-white border border-pink-400 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  required
+                />
+              </div>
+
+              {[1, 2, 3, 4].map((num) => {
+                const opt = `option${num}`;
+                const isSelected = questionData.crt_option === questionData[opt];
+                return (
+                  <div
+                    key={opt}
+                    className={`flex items-center space-x-3 p-3 rounded-md ${
+                      isSelected ? 'border-2 border-pink-500 shadow-[0_0_10px_#ec4899]' : 'border border-pink-300'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="crt_option"
+                      checked={isSelected}
+                      onChange={() => handleOptionSelect(opt)}
+                      className="accent-pink-500"
+                    />
+                    <input
+                      type="text"
+                      name={opt}
+                      value={questionData[opt]}
+                      onChange={handleQuestionChange}
+                      className="w-full p-2 bg-black text-white border border-pink-300 rounded-md"
+                      placeholder={`Option ${num}`}
+                      required
+                    />
+                  </div>
+                );
+              })}
+
+              <button
+                onClick={saveQuestionAndMoveNext}
+                className="w-full mt-4 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow-[0_0_10px_#22c55e] transition duration-300"
+              >
+                {currentQuestionIndex + 1 === quizInfo.totalQuestions ? 'Submit Quiz' : 'Next Question'}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 };

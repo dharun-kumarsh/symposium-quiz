@@ -23,7 +23,7 @@ const StartQuiz = () => {
 
       setQuizData(quizQuestions);
       setLayout(quizQuestions[0].layout);
-      setBgImage(quizQuestions[0].bg_image || 'default.jpg'); // Set background image from quiz data
+      setBgImage(quizQuestions[0].bg_image || 'default.jpg');
       setIsQuizStarted(true);
     } catch (error) {
       console.error('Error fetching quiz data:', error);
@@ -47,12 +47,11 @@ const StartQuiz = () => {
     } else {
       setShowScore(true);
 
-      // Save the score
       const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
       const email = loggedInUser?.email || 'anonymous@example.com';
       const payload = {
         email,
-        password: '', // leave blank or use a placeholder
+        password: '',
         quiz: quizName,
         score: score + (selectedOption === currentQuestion.crt_option ? 1 : 0),
       };
@@ -82,7 +81,12 @@ const StartQuiz = () => {
             <button
               key={num}
               onClick={() => handleOptionSelect(opt)}
-              className={`py-2 px-4 border rounded-md ${selectedOption === opt ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}
+              className={`py-3 px-4 rounded-lg border-2 text-lg font-semibold transition-all duration-300
+                ${
+                  selectedOption === opt
+                    ? 'bg-blue-500 text-white border-blue-400 shadow-[0_0_15px_#60a5fa]'
+                    : 'bg-black text-neonGreen border-green-400 hover:scale-105 hover:shadow-[0_0_12px_#22c55e]'
+                }`}
             >
               {opt}
             </button>
@@ -94,40 +98,42 @@ const StartQuiz = () => {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center bg-cover bg-center"
+      className="min-h-screen flex items-center justify-center bg-black bg-cover bg-center"
       style={{ backgroundImage: `url(${bgImage})` }}
     >
-      <div className="max-w-3xl mx-auto p-6 bg-white bg-opacity-90 rounded-xl shadow-md text-center">
+      <div className="max-w-3xl w-full p-8 rounded-2xl border-2 border-pink-500 shadow-[0_0_40px_#ec4899] bg-black bg-opacity-90 text-center text-white transition-all duration-300">
         {!isQuizStarted ? (
           <div>
-            <h2 className="text-2xl font-bold mb-4">Enter Quiz Name</h2>
+            <h2 className="text-4xl font-extrabold mb-6 text-pink-400 drop-shadow-[0_0_15px_#f472b6]">Enter Quiz Name</h2>
             <input
               type="text"
               value={quizName}
               onChange={(e) => setQuizName(e.target.value)}
               placeholder="e.g. JavaScript Basics"
-              className="w-full p-2 border rounded-md mb-4"
+              className="w-full p-3 mb-6 rounded-md bg-black text-white border-2 border-pink-500 focus:outline-none focus:ring-2 focus:ring-pink-400"
             />
             <button
               onClick={handleStartQuiz}
-              className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700"
+              className="bg-gradient-to-r from-pink-500 via-pink-400 to-pink-600 py-3 px-8 rounded-full text-white text-lg font-bold shadow-[0_0_15px_#f9a8d4] hover:scale-105 hover:shadow-[0_0_30px_#fb7185] transition-all duration-300"
             >
-              Start Quiz
+              🚀 Start Quiz
             </button>
           </div>
         ) : showScore ? (
           <div>
-            <h2 className="text-2xl font-bold mb-4">Quiz Completed!</h2>
-            <p className="text-lg">Your Score: {score} / {quizData.length}</p>
+            <h2 className="text-4xl font-bold mb-4 text-pink-400 drop-shadow-[0_0_10px_#f472b6]">🎉 Quiz Completed!</h2>
+            <p className="text-2xl text-white">Your Score: <span className="text-pink-300">{score}</span> / {quizData.length}</p>
           </div>
         ) : (
           <div>
-            <h2 className="text-xl font-semibold">Q{currentQuestion.q_no}. {currentQuestion.question}</h2>
+            <h2 className="text-2xl font-semibold mb-6 text-pink-300 drop-shadow-[0_0_8px_#f9a8d4]">
+              Q{currentQuestion.q_no}. {currentQuestion.question}
+            </h2>
             {renderOptions()}
             {selectedOption && (
               <button
                 onClick={handleNext}
-                className="mt-6 bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700"
+                className="mt-6 bg-gradient-to-r from-pink-500 via-pink-400 to-pink-600 text-white px-10 py-3 rounded-full font-bold text-lg shadow-[0_0_15px_#f472b6] hover:scale-105 hover:shadow-[0_0_25px_#f9a8d4] transition-all duration-300"
               >
                 {currentQuestionIndex + 1 === quizData.length ? 'Finish' : 'Next'}
               </button>
