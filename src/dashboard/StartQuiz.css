@@ -1,0 +1,53 @@
+/* Arcade Theme Styles */
+.arcade-theme {
+    background-color: rgba(0, 0, 0, 0.8); /* Slightly transparent background */
+    color: #00b7ff;
+    border: 2px solid #00b7ff;
+    box-shadow: 0 0 5px #00b7ff; /* Reduced neon effect */
+    font-family: 'Press Start 2P', cursive; /* Arcade-style font */
+  }
+  
+  .arcade-theme h2 {
+    color: #00b7ff;
+    text-shadow: 0 0 2px #00b7ff; /* Reduced neon effect */
+  }
+  
+  .arcade-theme input {
+    border-color: #00b7ff;
+    color: #00b7ff;
+  }
+  
+  .arcade-theme button {
+    background-color: #000;
+    border-color: #00b7ff;
+    color: #00b7ff;
+    text-shadow: 0 0 2px #00b7ff; /* Reduced neon effect */
+  }
+  
+  .arcade-theme button:hover {
+    background-color: #00b7ff;
+    color: #000;
+  }
+  
+  /* Ensure the background image is visible */
+  .bg-cover {
+    background-size: cover;
+  }
+  
+  .bg-center {
+    background-position: center;
+  }
+  
+  .bg-blend-overlay {
+    background-blend-mode: overlay;
+  }
+  
+  /* Custom styles for the question heading and buttons */
+  .question-heading {
+    color: #3b82f6; /* Blue color for the question heading */
+  }
+  
+  .next-finish-button {
+    background-color: #6b46c1; /* Purple color for the buttons */
+    border-color: #6b46c1;
+  }

@@ -1,6 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { PlayCircle, Sparkles } from 'lucide-react';
+import toast, { Toaster } from 'react-hot-toast';
+import './StartQuiz.css'; 
 
-const StartQuiz = () => {
+function StartQuiz() {
   const [quizName, setQuizName] = useState('');
   const [quizData, setQuizData] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -9,25 +13,31 @@ const StartQuiz = () => {
   const [showScore, setShowScore] = useState(false);
   const [layout, setLayout] = useState('');
   const [isQuizStarted, setIsQuizStarted] = useState(false);
-  const [bgImage, setBgImage] = useState('');
+  const [bgImage, setBgImage] = useState('/bg.png'); 
 
   const handleStartQuiz = async () => {
-    if (!quizName) return alert('Please enter a quiz name.');
+    if (!quizName) {
+      toast.error('Please enter a quiz name.');
+      return;
+    }
 
     try {
       const response = await fetch('https://api.sheetbest.com/sheets/ee34220b-70d8-4d1f-b6ed-9e93352f5018');
       const data = await response.json();
       const quizQuestions = data.filter(item => item.quiz_name.toLowerCase() === quizName.toLowerCase());
 
-      if (quizQuestions.length === 0) return alert('Quiz not found.');
+      if (quizQuestions.length === 0) {
+        toast.error('Quiz not found.');
+        return;
+      }
 
       setQuizData(quizQuestions);
       setLayout(quizQuestions[0].layout);
-      setBgImage(quizQuestions[0].bg_image || 'default.jpg');
+      setBgImage(quizQuestions[0].bg_image || '/bg.png');
       setIsQuizStarted(true);
     } catch (error) {
       console.error('Error fetching quiz data:', error);
-      alert('Failed to load quiz.');
+      toast.error('Failed to load quiz.');
     }
   };
 
@@ -62,34 +72,35 @@ const StartQuiz = () => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
+        toast.success('Score saved successfully!');
       } catch (err) {
         console.error('Error saving score:', err);
-        alert('Failed to save your score.');
+        toast.error('Failed to save your score.');
       }
     }
   };
 
-  const currentQuestion = quizData[currentQuestionIndex];
-
   const renderOptions = () => {
-    const layoutStyle = layout === '2x2' ? 'grid-cols-2' : 'grid-cols-1';
+    const layoutStyle = layout === '2x2' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1';
     return (
       <div className={`grid ${layoutStyle} gap-4 mt-4`}>
         {[1, 2, 3, 4].map(num => {
-          const opt = currentQuestion[`option${num}`];
+          const opt = quizData[currentQuestionIndex][`option${num}`];
           return (
-            <button
+            <motion.button
               key={num}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => handleOptionSelect(opt)}
               className={`py-3 px-4 rounded-lg border-2 text-lg font-semibold transition-all duration-300
                 ${
                   selectedOption === opt
-                    ? 'bg-blue-500 text-white border-blue-400 shadow-[0_0_15px_#60a5fa]'
-                    : 'bg-black text-neonGreen border-green-400 hover:scale-105 hover:shadow-[0_0_12px_#22c55e]'
+                    ? 'bg-neonBlue/20 text-white border-neonBlue shadow-neonBlue'
+                    : 'bg-black/50 text-neonGreen border-neonGreen hover:shadow-neonGreen'
                 }`}
             >
               {opt}
-            </button>
+            </motion.button>
           );
         })}
       </div>
@@ -97,52 +108,67 @@ const StartQuiz = () => {
   };
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center bg-black bg-cover bg-center"
-      style={{ backgroundImage: `url(${bgImage})` }}
-    >
-      <div className="max-w-3xl w-full p-8 rounded-2xl border-2 border-pink-500 shadow-[0_0_40px_#ec4899] bg-black bg-opacity-90 text-center text-white transition-all duration-300">
-        {!isQuizStarted ? (
-          <div>
-            <h2 className="text-4xl font-extrabold mb-6 text-pink-400 drop-shadow-[0_0_15px_#f472b6]">Enter Quiz Name</h2>
-            <input
-              type="text"
-              value={quizName}
-              onChange={(e) => setQuizName(e.target.value)}
-              placeholder="e.g. JavaScript Basics"
-              className="w-full p-3 mb-6 rounded-md bg-black text-white border-2 border-pink-500 focus:outline-none focus:ring-2 focus:ring-pink-400"
-            />
-            <button
-              onClick={handleStartQuiz}
-              className="bg-gradient-to-r from-pink-500 via-pink-400 to-pink-600 py-3 px-8 rounded-full text-white text-lg font-bold shadow-[0_0_15px_#f9a8d4] hover:scale-105 hover:shadow-[0_0_30px_#fb7185] transition-all duration-300"
-            >
-              🚀 Start Quiz
-            </button>
-          </div>
-        ) : showScore ? (
-          <div>
-            <h2 className="text-4xl font-bold mb-4 text-pink-400 drop-shadow-[0_0_10px_#f472b6]">🎉 Quiz Completed!</h2>
-            <p className="text-2xl text-white">Your Score: <span className="text-pink-300">{score}</span> / {quizData.length}</p>
-          </div>
-        ) : (
-          <div>
-            <h2 className="text-2xl font-semibold mb-6 text-pink-300 drop-shadow-[0_0_8px_#f9a8d4]">
-              Q{currentQuestion.q_no}. {currentQuestion.question}
-            </h2>
-            {renderOptions()}
-            {selectedOption && (
-              <button
-                onClick={handleNext}
-                className="mt-6 bg-gradient-to-r from-pink-500 via-pink-400 to-pink-600 text-white px-10 py-3 rounded-full font-bold text-lg shadow-[0_0_15px_#f472b6] hover:scale-105 hover:shadow-[0_0_25px_#f9a8d4] transition-all duration-300"
+    <div className="min-h-screen bg-cover bg-center bg-blend-overlay p-4" style={{ backgroundImage: `url(${bgImage})` }}>
+      <Toaster position="top-center" />
+      <div className="max-w-4xl mx-auto mt-20">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full p-8 rounded-2xl border-2 border-blue-500 bg-black/80 backdrop-blur-sm shadow-neonBlue arcade-theme"
+        >
+          {!isQuizStarted ? (
+            <div>
+              <div className="flex items-center justify-center gap-3 mb-8">
+                <PlayCircle className="w-8 h-8 text-blue-500" />
+                <h2 className="text-2xl font-bold text-blue-500">Start Quiz</h2>
+              </div>
+              <input
+                type="text"
+                value={quizName}
+                onChange={(e) => setQuizName(e.target.value)}
+                placeholder="Enter quiz name"
+                className="w-full px-4 py-3 rounded-lg border-2 border-blue-500 bg-black/50 text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 mb-6"
+              />
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={handleStartQuiz}
+                className="group w-full bg-black border-2 border-blue-500 text-blue-500 font-bold py-3 rounded-lg transition-all duration-300 hover:bg-blue-500 hover:text-black hover:shadow-blue-500 flex items-center justify-center gap-2"
               >
-                {currentQuestionIndex + 1 === quizData.length ? 'Finish' : 'Next'}
-              </button>
-            )}
-          </div>
-        )}
+                <span>Start Quiz</span>
+                <Sparkles className="w-5 h-5 group-hover:text-black transition-colors duration-300" />
+              </motion.button>
+            </div>
+          ) : showScore ? (
+            <div className="text-center">
+              <Sparkles className="w-12 h-12 text-blue-500 mx-auto mb-4" />
+              <h2 className="text-4xl font-bold mb-4 text-blue-500">Quiz Completed!</h2>
+              <p className="text-2xl text-white">
+                Your Score: <span className="text-blue-500 font-bold">{score}</span> / {quizData.length}
+              </p>
+            </div>
+          ) : (
+            <div>
+              <h2 className="text-2xl font-semibold mb-6 text-green-500">
+                Question {currentQuestionIndex + 1}
+              </h2>
+              {renderOptions()}
+              {selectedOption && (
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleNext}
+                  className="mt-6 w-full bg-green-500 border-2 border-green-500 text-white font-bold py-3 rounded-lg transition-all duration-300 hover:bg-green-600 hover:text-white hover:shadow-green-600"
+                >
+                  {currentQuestionIndex + 1 === quizData.length ? 'Finish' : 'Next'}
+                </motion.button>
+              )}
+            </div>
+          )}
+        </motion.div>
       </div>
     </div>
   );
-};
+}
 
 export default StartQuiz;
